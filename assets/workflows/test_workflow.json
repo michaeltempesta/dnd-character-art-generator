@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "title": "test_workflow",
+    "description": "Generated workflow for test_workflow",
+    "version": "1.0.0",
+    "created": "2025-10-14T12:06:44.109376"
+  },
+  "nodes": {
+    "1": {
+      "type": "CheckpointLoaderSimple",
+      "inputs": {},
+      "outputs": [
+        "MODEL",
+        "CLIP",
+        "VAE"
+      ],
+      "settings": {
+        "ckpt_name": "stabilityai/stable-diffusion-xl-base-1.0"
+      }
+    },
+    "2": {
+      "type": "CLIPTextEncode",
+      "inputs": {
+        "clip": "checkpoint_loader.CLIP"
+      },
+      "outputs": [
+        "CONDITIONING"
+      ],
+      "settings": {
+        "text": "Fantasy warrior, detailed armor"
+      }
+    },
+    "3": {
+      "type": "CLIPTextEncode",
+      "inputs": {
+        "clip": "checkpoint_loader.CLIP"
+      },
+      "outputs": [
+        "CONDITIONING"
+      ],
+      "settings": {
+        "text": "blurry, low quality"
+      }
+    },
+    "4": {
+      "type": "EmptyLatentImage",
+      "inputs": {},
+      "outputs": [
+        "LATENT"
+      ],
+      "settings": {
+        "width": 896,
+        "height": 1120,
+        "batch_size": 1
+      }
+    },
+    "5": {
+      "type": "KSampler",
+      "inputs": {
+        "model": "checkpoint_loader.MODEL",
+        "positive": "positive_prompt.CONDITIONING",
+        "negative": "negative_prompt.CONDITIONING",
+        "latent_image": "empty_latent.LATENT"
+      },
+      "outputs": [
+        "LATENT"
+      ],
+      "settings": {
+        "seed": -1,
+        "steps": 30,
+        "cfg": 6.5,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1.0
+      }
+    },
+    "6": {
+      "type": "VAEDecode",
+      "inputs": {
+        "samples": "ksampler.LATENT",
+        "vae": "checkpoint_loader.VAE"
+      },
+      "outputs": [
+        "IMAGE"
+      ],
+      "settings": {}
+    },
+    "7": {
+      "type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "character_art",
+        "images": "vae_decode.IMAGE"
+      },
+      "outputs": [],
+      "settings": {}
+    },
+    "8": {
+      "type": "ControlNetLoader",
+      "inputs": {},
+      "outputs": [
+        "CONTROL_NET"
+      ],
+      "settings": {
+        "control_net_name": "diffusers/controlnet-lineart-sdxl-1.0"
+      }
+    },
+    "9": {
+      "type": "ControlNetApply",
+      "inputs": {
+        "conditioning": "positive_prompt.CONDITIONING",
+        "control_net": "controlnet_loader.CONTROL_NET",
+        "image": "controlnet_image.IMAGE",
+        "strength": 0.45
+      },
+      "outputs": [
+        "CONDITIONING"
+      ],
+      "settings": {}
+    },
+    "10": {
+      "type": "CheckpointLoaderSimple",
+      "inputs": {},
+      "outputs": [
+        "MODEL",
+        "CLIP",
+        "VAE"
+      ],
+      "settings": {
+        "ckpt_name": "stabilityai/stable-diffusion-xl-refiner-1.0"
+      }
+    },
+    "11": {
+      "type": "KSampler",
+      "inputs": {
+        "model": "refiner_checkpoint.MODEL",
+        "positive": "positive_prompt.CONDITIONING",
+        "negative": "negative_prompt.CONDITIONING",
+        "latent_image": "base_sampler.LATENT"
+      },
+      "outputs": [
+        "LATENT"
+      ],
+      "settings": {
+        "seed": -1,
+        "steps": 20,
+        "cfg": 5.5,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 0.25
+      }
+    }
+  },
+  "links": [
+    [
+      5,
+      1,
+      0,
+      5,
+      0,
+      "MODEL"
+    ],
+    [
+      5,
+      2,
+      0,
+      5,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      3,
+      0,
+      5,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      3,
+      "LATENT"
+    ],
+    [
+      6,
+      5,
+      0,
+      6,
+      0,
+      "LATENT"
+    ],
+    [
+      6,
+      1,
+      2,
+      6,
+      1,
+      "VAE"
+    ],
+    [
+      11,
+      1,
+      0,
+      11,
+      0,
+      "MODEL"
+    ],
+    [
+      11,
+      2,
+      0,
+      11,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      3,
+      0,
+      11,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      11,
+      4,
+      0,
+      11,
+      3,
+      "LATENT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        0,
+        0
+      ]
+    }
+  },
+  "version": 0.4
+}

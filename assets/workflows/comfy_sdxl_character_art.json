@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "title": "SDXL Character Art Generator",
+    "description": "Complete SDXL workflow for D&D character art generation with ControlNet and Refiner",
+    "version": "1.0.0",
+    "author": "D&D Character Art Generator",
+    "created": "2024-01-01"
+  },
+  "nodes": {
+    "1": {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [50, 50],
+      "size": [315, 98],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [2], "slot_index": 0},
+        {"name": "CLIP", "type": "CLIP", "links": [3, 4], "slot_index": 1},
+        {"name": "VAE", "type": "VAE", "links": [5], "slot_index": 2}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["stabilityai/stable-diffusion-xl-base-1.0"]
+    },
+    "2": {
+      "id": 2,
+      "type": "CLIPTextEncode",
+      "pos": [400, 50],
+      "size": [400, 200],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["Adult woman (late-20s/30s), Shadar-Kai ashen gray skin with subtle violet undertone, mature bone structure (defined jawline, proportional eyes), silver-white twin drills as hair-wrapped satin-keratin spiral horns (2–2.25 turns, uniform pitch); left horn near-black with gold-opal marbling halo; right horn near-black with deep oxblood marbling and a frayed crimson filament; slim gold cuffs at horn roots, soft AO at base; dark 1800s Victorian carnival couture: high collar, tight bodice, layered black satin and velvet, ornate black lace mob cap, ribbon bows, jet beadwork, cameo brooch; candlelit dim parlor, warm rim light + cool moonlight fill, dramatic chiaroscuro; painterly oil impasto; tight head-and-shoulders three-quarter; shallow DoF; do not wrap horns behind head; no hair gloss."]
+    },
+    "3": {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [400, 300],
+      "size": [400, 200],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 4}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [7], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["child, teen, loli, babyface, chibi, youthful face, huge anime eyes, toddler nose, oversized head, school uniform, hair-only drills, hidden horns, plastic hair shine, lowres, blur, artifacts, duplicate horns"]
+    },
+    "4": {
+      "id": 4,
+      "type": "EmptyLatentImage",
+      "pos": [50, 550],
+      "size": [315, 106],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [8], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [896, 1120, 1]
+    },
+    "5": {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [850, 50],
+      "size": [315, 262],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 2},
+        {"name": "positive", "type": "CONDITIONING", "link": 6},
+        {"name": "negative", "type": "CONDITIONING", "link": 7},
+        {"name": "latent_image", "type": "LATENT", "link": 8}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [9], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [30, "fixed", 6.5, 1, "euler", "normal", 1.0]
+    },
+    "6": {
+      "id": 6,
+      "type": "VAEDecode",
+      "pos": [1200, 50],
+      "size": [210, 46],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 9},
+        {"name": "vae", "type": "VAE", "link": 5}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [10], "slot_index": 0}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"}
+    },
+    "7": {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [1450, 50],
+      "size": [315, 270],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "filename_prefix", "type": "STRING", "link": null},
+        {"name": "images", "type": "IMAGE", "link": 10}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["character_art"]
+    }
+  },
+  "links": [
+    [2, 1, 0, 2, 0, "MODEL"],
+    [3, 1, 1, 2, 0, "CLIP"],
+    [4, 1, 1, 3, 0, "CLIP"],
+    [5, 1, 2, 6, 1, "VAE"],
+    [6, 2, 0, 5, 1, "CONDITIONING"],
+    [7, 3, 0, 5, 2, "CONDITIONING"],
+    [8, 4, 0, 5, 3, "LATENT"],
+    [9, 5, 0, 6, 0, "LATENT"],
+    [10, 6, 0, 7, 1, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [0, 0]
+    }
+  },
+  "version": 0.4
+}

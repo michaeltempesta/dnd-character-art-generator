@@ -1,0 +1,101 @@
+{
+  "art_styles": {
+    "fantasy_realistic": {
+      "name": "Fantasy Realistic",
+      "positive_suffix": "photorealistic fantasy character, detailed armor, magical weapons, dramatic lighting, high quality, professional photography",
+      "negative_suffix": "blurry, low quality, distorted, deformed, ugly, cartoon, anime",
+      "settings": {
+        "steps": 30,
+        "cfg": 6.5,
+        "quality": "high"
+      }
+    },
+    "epic_fantasy": {
+      "name": "Epic Fantasy",
+      "positive_suffix": "epic fantasy character, heroic pose, detailed armor, magical weapons, dramatic lighting, fantasy art style",
+      "negative_suffix": "blurry, low quality, distorted, deformed, ugly, modern, realistic",
+      "settings": {
+        "steps": 28,
+        "cfg": 7.0,
+        "quality": "high"
+      }
+    },
+    "dark_fantasy": {
+      "name": "Dark Fantasy",
+      "positive_suffix": "dark fantasy character, gothic armor, shadowy lighting, mysterious atmosphere, dark fantasy art",
+      "negative_suffix": "blurry, low quality, distorted, deformed, ugly, bright, cheerful, colorful",
+      "settings": {
+        "steps": 32,
+        "cfg": 6.0,
+        "quality": "high"
+      }
+    },
+    "anime_style": {
+      "name": "Anime Style",
+      "positive_suffix": "anime character, manga style, detailed armor, magical weapons, anime art style",
+      "negative_suffix": "blurry, low quality, distorted, deformed, ugly, realistic, photorealistic",
+      "settings": {
+        "steps": 25,
+        "cfg": 7.5,
+        "quality": "medium"
+      }
+    },
+    "watercolor_fantasy": {
+      "name": "Watercolor Fantasy",
+      "positive_suffix": "watercolor fantasy character, hand-painted style, artistic, detailed armor, magical weapons",
+      "negative_suffix": "blurry, low quality, distorted, deformed, ugly, digital, photorealistic",
+      "settings": {
+        "steps": 35,
+        "cfg": 6.0,
+        "quality": "high"
+      }
+    }
+  },
+  "system_optimization": {
+    "gpu_ultra": {
+      "vram_gb": 16,
+      "quality": "ultra",
+      "batch_size": 4,
+      "steps": 40,
+      "max_resolution": [1280, 1536]
+    },
+    "gpu_high": {
+      "vram_gb": 8,
+      "quality": "high",
+      "batch_size": 2,
+      "steps": 30,
+      "max_resolution": [1024, 1280]
+    },
+    "gpu_medium": {
+      "vram_gb": 4,
+      "quality": "medium",
+      "batch_size": 1,
+      "steps": 25,
+      "max_resolution": [896, 1120]
+    },
+    "cpu_only": {
+      "vram_gb": 0,
+      "quality": "low",
+      "batch_size": 1,
+      "steps": 20,
+      "max_resolution": [640, 800]
+    }
+  },
+  "security": {
+    "max_resolution": [1280, 1536],
+    "max_steps": 40,
+    "cfg_range": [3.0, 10.0],
+    "denylist": [
+      "child", "toddler", "infant", "kid", "minor", "young girl", "loli", "teen"
+    ],
+    "auth": {
+      "enabled": true,
+      "username": "user",
+      "password": "secure-password"
+    }
+  },
+  "default_prompts": {
+    "positive": "Adult woman (late-20s/30s), Shadar-Kai ashen gray skin with subtle violet undertone, mature bone structure (defined jawline, proportional eyes), silver-white twin drills as hair-wrapped satin-keratin spiral horns (2–2.25 turns, uniform pitch); left horn near-black with gold-opal marbling halo; right horn near-black with deep oxblood marbling and a frayed crimson filament; slim gold cuffs at horn roots, soft AO at base; dark 1800s Victorian carnival couture: high collar, tight bodice, layered black satin and velvet, ornate black lace mob cap, ribbon bows, jet beadwork, cameo brooch; candlelit dim parlor, warm rim light + cool moonlight fill, dramatic chiaroscuro; painterly oil impasto; tight head-and-shoulders three-quarter; shallow DoF; do not wrap horns behind head; no hair gloss.",
+    "negative": "child, teen, loli, babyface, chibi, youthful face, huge anime eyes, toddler nose, oversized head, school uniform, hair-only drills, hidden horns, plastic hair shine, lowres, blur, artifacts, duplicate horns"
+  }
+}
