@@ -307,12 +307,59 @@ class UnifiedArtGenerator:
                 generator=generator
             ).images[0]
         
+        # Save to Google Drive if available
+        self._save_to_google_drive(image, character_data, style, seed)
+        
         # Cleanup
         if self.DEVICE == "cuda":
             torch.cuda.empty_cache()
         gc.collect()
         
         return image, seed
+    
+    def _save_to_google_drive(self, image: Image.Image, character_data: Dict[str, Any], style: str, seed: int):
+        """Save generated image to Google Drive if available"""
+        try:
+            # Check if Google Drive is mounted
+            if os.path.exists("/content/drive/MyDrive"):
+                # Create filename with character info
+                character_name = character_data.get("name", "character")
+                safe_name = re.sub(r'[^\w\s-]', '', character_name).strip()
+                safe_name = re.sub(r'[-\s]+', '-', safe_name)
+                
+                timestamp = int(time.time())
+                filename = f"{safe_name}_{style}_{seed}_{timestamp}.png"
+                
+                # Save to Google Drive
+                drive_path = f"/content/drive/MyDrive/DnD_Character_Art/generated_images/{filename}"
+                os.makedirs(os.path.dirname(drive_path), exist_ok=True)
+                image.save(drive_path)
+                
+                print(f"✅ Image saved to Google Drive: {drive_path}")
+                
+                # Also save metadata
+                metadata = {
+                    "character_data": character_data,
+                    "style": style,
+                    "seed": seed,
+                    "timestamp": timestamp,
+                    "filename": filename
+                }
+                
+                metadata_path = f"/content/drive/MyDrive/DnD_Character_Art/generated_images/{safe_name}_{style}_{seed}_{timestamp}_metadata.json"
+                with open(metadata_path, 'w') as f:
+                    json.dump(metadata, f, indent=2)
+                    
+        except Exception as e:
+            print(f"⚠️  Could not save to Google Drive: {e}")
+            # Fallback to local save
+            try:
+                os.makedirs("/content/outputs", exist_ok=True)
+                local_path = f"/content/outputs/character_{int(time.time())}.png"
+                image.save(local_path)
+                print(f"📁 Saved locally: {local_path}")
+            except Exception as local_e:
+                print(f"❌ Could not save locally either: {local_e}")
     
     def inpaint_image(self, 
                      base_img: Image.Image,
@@ -349,6 +396,10 @@ class UnifiedArtGenerator:
             generator=generator
         ).images[0]
         
+        # Save inpainted image to Google Drive
+        inpaint_data = {"name": "inpainted_character", "type": "inpaint"}
+        self._save_to_google_drive(result, inpaint_data, "inpaint", seed)
+        
         if self.DEVICE == "cuda":
             torch.cuda.empty_cache()
         gc.collect()
@@ -361,8 +412,8 @@ class UnifiedArtGenerator:
             return "Please upload base and draw a mask."
         
         try:
-            # Create save directory
-            save_dir = "/content/drive/MyDrive/colab/masks"
+            # Create save directory in the new structure
+            save_dir = "/content/drive/MyDrive/DnD_Character_Art/masks"
             os.makedirs(save_dir, exist_ok=True)
             
             # Generate filenames
